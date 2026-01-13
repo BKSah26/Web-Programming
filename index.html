@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Website Layout</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #222;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .page {
+            width: 90%;
+            max-width: 900px;
+            background: white;
+            border: 6px solid #333;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            height: 80px;
+        }
+
+        .logo {
+            width: 20%;
+            background: red;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .heading {
+            width: 80%;
+            background: green;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+        }
+
+        /* Menu */
+        .menu {
+            background: yellow;
+            text-align: center;
+            padding: 12px;
+            font-weight: bold;
+        }
+
+        /* Sections */
+        .sections {
+            display: flex;
+            height: 120px;
+        }
+
+        .section1 {
+            background: blue;
+            width: 33.33%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: black;
+            font-weight: bold;
+        }
+
+        .section2 {
+            background: gray;
+            width: 33.33%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .section3 {
+            background: plum;
+            width: 33.33%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        /* Content + Sidebar */
+        .content-area {
+            display: flex;
+            height: 320px;
+        }
+
+        .content {
+            width: 75%;
+            background: #00ff99;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .sidebar {
+            width: 25%;
+            background: olive;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .footer {
+            background: #3aa0d0;
+            text-align: center;
+            padding: 16px;
+            font-weight: bold;
+        }
+
+        /* Second Page */
+        .title {
+            background: #c9f0a4;
+            color: #b36fa3;
+            text-align: center;
+            font-size: 30px;
+            padding: 15px;
+            font-weight: bold;
+        }
+
+        .article {
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .article img {
+            width: 40%;
+            border-radius: 50%;
+        }
+
+        .text {
+            width: 60%;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <!-- Top Layout -->
+    <div class="header">
+        <div class="logo">LOGO</div>
+        <div class="heading">Website Heading</div>
+    </div>
+
+    <div class="menu">MENU</div>
+
+    <div class="sections">
+        <div class="section1">SECTION 1</div>
+        <div class="section2">SECTION 2</div>
+        <div class="section3">SECTION 3</div>
+    </div>
+
+    <div class="content-area">
+        <div class="content">PAGE CONTENTS</div>
+        <div class="sidebar">SIDE BAR</div>
+    </div>
+
+    <div class="footer">PAGE FOOTER</div>
+
+    <!-- Second Layout -->
+    <div class="title">A COMPLETE WEBPAGE</div>
+
+    <div class="article">
+        <img src="fruit.jpg" alt="Fruit">
+        <div class="text">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris fermentum quam in risus eleifend fringilla. Aliquam placerat, ipsum sit amet cursus rhoncus, augue mi tincidunt erat, et consequat velit massa a velit.</p>
+            <br>
+            <p>Ut tincidunt tempus libero non convallis. Morbi consequat eros eget elit porta. Curabitur placerat eros dui, vitae lobortis sapien laoreet ac. Maecenas a lacus diam. Integer odio risus, convallis eu egestas ac, venenatis nec leo.</p>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
+
