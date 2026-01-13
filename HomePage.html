@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            background: #333;
+            display: flex;
+        }
+
+        li {
+            position: relative;
+        }
+
+        a {
+            color: white;
+            padding: 14px 20px;
+            display: block;
+            text-decoration: none;
+        }
+
+        a:hover {
+            background: #444;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            background: #555;
+            top: 100%;
+            left: 0;
+        }
+
+        .dropdown a {
+            width: 150px;
+        }
+
+        li:hover .dropdown {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<ul>
+    <li><a href="#">Home</a></li>
+    <li>
+        <a href="#">Services</a>
+        <div class="dropdown">
+            <a href="#">Web Design</a>
+            <a href="#">SEO</a>
+            <a href="#">Marketing</a>
+        </div>
+    </li>
+    <li><a href="#">About</a></li>
+    <li><a href="#">Contact</a></li>
+</ul>
+
+</body>
+</html>
