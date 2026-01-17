@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Web Programming – Problems 1, 2, 3</title>
+<style>
+body{
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}h2{ margin-top:40px; }
+
+/* ---------------- PROBLEM 1 ---------------- */ .square-path{ width:200px; height:200px; border:2px dashed #444; position: relative; }
+
+.circle{ width:40px; height:40px; background:red; border-radius:50%; position:absolute; animation: moveSquare 4s linear infinite, spin 1s linear infinite; }
+
+@keyframes moveSquare{ 0%{ top:0; left:0; } 25%{ top:0; left:160px; } 50%{ top:160px; left:160px; } 75%{ top:160px; left:0; } 100%{ top:0; left:0; } }
+
+@keyframes spin{ from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
+
+/* ---------------- PROBLEM 2 ---------------- */ .star-container{ width:200px; height:200px; position: relative; }
+
+.star{ width:100%; height:100%; background:blue; position:absolute; }
+
+.star:nth-child(2){ transform: rotate(20deg); } .star:nth-child(3){ transform: rotate(40deg); } .star:nth-child(4){ transform: rotate(60deg); } .star:nth-child(5){ transform: rotate(80deg); }
+
+/* ---------------- PROBLEM 3 ---------------- */ .header{ background:#ff6f61; color:white; text-align:center; padding:20px; font-size:24px; }
+
+.nav{ background:#3aa0d0; padding:10px; } .nav a{ color:white; margin-right:15px; text-decoration:none; }
+
+.main-layout{ display:flex; margin-top:10px; }
+
+.main{ width:70%; background:#2ecc71; padding:20px; color:white; }
+
+.sidebar{ width:30%; background:#f39c12; padding:20px; color:white; }
+
+.article{ background:#9b59b6; color:white; padding:20px; margin-top:10px; }
+
+.footer{ background:#34495e; color:white; text-align:center; padding:15px; margin-top:10px; } </style>
+
+</head>
+<body><h2>Problem 1: Infinite circular rotation following a square path</h2>
+<div class="square-path">
+    <div class="circle"></div>
+</div><h2>Problem 2: Rotating star-like shape</h2>
+<div class="star-container">
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+</div><h2>Problem 3: Webpage Layout</h2>
+<div class="header">Web Programming</div>
+<div class="nav">
+    <a href="#">Home</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+</div><div class="main-layout">
+    <div class="main">
+        <h3>Main Section</h3>
+        <p>This is the main content of the page.</p>
+        <div class="article">
+            <h3>Article</h3>
+            <p>This is a standalone article related to the main content.</p>
+        </div>
+    </div>
+    <div class="sidebar">
+        <h3>Sidebar</h3>
+        <p>This is the sidebar, containing related links or ads.</p>
+    </div>
+</div><div class="footer">© 2025 Your Company. All rights reserved.</div></body>
+</html>
