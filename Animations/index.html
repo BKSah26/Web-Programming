@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Animations</title>
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#111;
+    color:#fff;
+    padding:20px;
+}
+
+h2{ margin-top:40px; }
+
+.section{
+    margin-bottom:40px;
+}
+
+/* ---------- COMMON ---------- */
+.center{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* ---------- 1. SQUARE TO DIAMOND ---------- */
+.square{
+    width:120px;
+    height:120px;
+    background:#00bcd4;
+    transition: transform 0.5s;
+}
+
+.square:hover{
+    transform: rotate(45deg);
+}
+
+/* ---------- 2. COLOR + SCALE ON HOVER ---------- */
+.box{
+    width:120px;
+    height:120px;
+    background:blue;
+    transition: background-color 0.5s, transform 0.5s;
+}
+
+.box:hover{
+    background:red;
+    transform: scale(1.3);
+}
+
+/* ---------- 3. BOUNCING BALL ---------- */
+.ball{
+    width:50px;
+    height:50px;
+    background:red;
+    border-radius:50%;
+    animation: bounce 1.5s infinite ease-in-out;
+}
+
+@keyframes bounce{
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-80px); }
+}
+
+/* ---------- 4. BUFFERING CIRCLE ---------- */
+.loader{
+    width:60px;
+    height:60px;
+    border:6px solid #444;
+    border-top:6px solid #fff;
+    border-radius:50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin{
+    from{ transform: rotate(0deg); }
+    to{ transform: rotate(360deg); }
+}
+
+/* ---------- 5. PROFILE CARD ---------- */
+.card{
+    width:260px;
+    background:#222;
+    border-radius:12px;
+    padding:20px;
+    text-align:center;
+    transition: transform 0.4s, box-shadow 0.4s;
+}
+
+.card img{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+}
+
+.card:hover{
+    transform: scale(1.08);
+    box-shadow:0 10px 30px rgba(0,0,0,0.6);
+}
+</style>
+</head>
+<body>
+
+<h1>CSS Hover & Animation Effects (Exam Based)</h1>
+
+<div class="section">
+<h2>1. Square → Diamond (Hover Rotate)</h2>
+<div class="center">
+    <div class="square"></div>
+</div>
+</div>
+
+<div class="section">
+<h2>2. Color & Size Change on Hover</h2>
+<div class="center">
+    <div class="box"></div>
+</div>
+</div>
+
+<div class="section">
+<h2>3. Bouncing Ball</h2>
+<div class="center" style="height:150px;">
+    <div class="ball"></div>
+</div>
+</div>
+
+<div class="section">
+<h2>4. Buffering Circle</h2>
+<div class="center">
+    <div class="loader"></div>
+</div>
+</div>
+
+<div class="section">
+<h2>5. Profile Card Hover Zoom</h2>
+<div class="center">
+    <div class="card">
+        <img src="profile.jpg" alt="Profile">
+        <h3>John Doe</h3>
+        <p>Web Developer</p>
+    </div>
+</div>
+</div>
+
+</body>
+</html>
