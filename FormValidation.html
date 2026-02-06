@@ -1,0 +1,13 @@
+<form onsubmit="return validateForm()">
+<input id="fname">
+<input type="submit">
+</form>
+
+<script>
+function validateForm() {
+    if (fname.value == "") {
+        alert("First name must be filled out");
+        return false;
+    }
+}
+</script>

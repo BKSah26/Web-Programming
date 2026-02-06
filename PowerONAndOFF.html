@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+<button onclick="on()">ON</button>
+<button onclick="off()">OFF</button>
+<p id="status"></p>
+
+<script>
+let state = "";
+
+function on() {
+    state = "ON";
+    document.getElementById("status").innerHTML = "Status: " + state;
+}
+
+function off() {
+    state = "OFF";
+    document.getElementById("status").innerHTML = "Status: " + state;
+}
+</script>
+</body>
+</html>
+

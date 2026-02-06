@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+<button onclick="present()">Mark Present</button>
+<button onclick="absent()">Mark Absent</button>
+
+<p id="p"></p>
+<p id="a"></p>
+
+<script>
+let presentCount = 0;
+let absentCount = 0;
+
+function present() {
+    presentCount++;
+    document.getElementById("p").innerHTML = "Total Present: " + presentCount;
+}
+
+function absent() {
+    absentCount++;
+    document.getElementById("a").innerHTML = "Total Absent: " + absentCount;
+}
+</script>
+</body>
+</html>
+

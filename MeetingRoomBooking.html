@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+<button onclick="book()">Book Room</button>
+<p id="msg"></p>
+
+<script>
+let isBooked = false;
+
+function book() {
+    if (!isBooked) {
+        document.getElementById("msg").innerHTML = "Room Booked";
+        isBooked = true;
+    } else {
+        document.getElementById("msg").innerHTML = "Already Booked";
+    }
+}
+</script>
+</body>
+</html>
+
