@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script>
+
+let config = { buttonCount: 5 };
+
+let main = document.createElement("div");
+document.body.appendChild(main);
+
+let counters = {};
+
+function createElement(type, parent, text) {
+let el = document.createElement(type);
+el.textContent = text;
+parent.appendChild(el);
+return el;
+}
+
+for(let i=1;i<=config.buttonCount;i++){
+let btn = createElement("button", main, "Button " + i);
+btn.className = "btn";
+btn.style.margin = "10px";
+btn.total = 0;
+
+btn.onclick = function() {
+this.total++;
+this.textContent = "Button " + i + " (" + this.total + ")";
+};
+}
+
+let tallyBtn = createElement("button", main, "Show Totals");
+tallyBtn.style.display = "block";
+tallyBtn.style.marginTop = "20px";
+
+let ul = createElement("ul", main, "");
+
+tallyBtn.onclick = function() {
+ul.innerHTML = "";
+let buttons = document.querySelectorAll(".btn");
+
+buttons.forEach(function(btn){
+let li = document.createElement("li");
+li.textContent = btn.textContent;
+ul.appendChild(li);
+});
+};
+
+</script>
+
+</body>
+</html>

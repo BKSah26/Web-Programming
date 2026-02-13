@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Address Validation</title>
+</head>
+<body>
+
+<h2>Address Form</h2>
+
+<form onsubmit="return validateAddress()">
+
+House No:
+<input type="text" id="house"><br><br>
+
+Street:
+<input type="text" id="street"><br><br>
+
+Area:
+<input type="text" id="area"><br><br>
+
+City:
+<select id="city">
+<option value="">Select City</option>
+<option>Chennai</option>
+<option>Delhi</option>
+</select><br><br>
+
+State:
+<select id="state">
+<option value="">Select State</option>
+<option>Tamil Nadu</option>
+<option>Delhi</option>
+</select><br><br>
+
+Country:
+<select id="country">
+<option value="">Select Country</option>
+<option>India</option>
+<option>USA</option>
+</select><br><br>
+
+Pincode:
+<input type="text" id="pincode"><br><br>
+
+Landmark:
+<input type="text" id="landmark"><br><br>
+
+Address Type:
+<input type="radio" name="type">Residential
+<input type="radio" name="type">Office
+<input type="radio" name="type">Other<br><br>
+
+<input type="submit">
+
+</form>
+
+<script>
+function validateAddress() {
+
+let house = document.getElementById("house").value;
+if(!/^[A-Za-z0-9\/\-]{1,10}$/.test(house)) {
+alert("Invalid House Number");
+return false;
+}
+
+let street = document.getElementById("street").value;
+if(!/^[A-Za-z ]{3,50}$/.test(street)) {
+alert("Invalid Street");
+return false;
+}
+
+let area = document.getElementById("area").value;
+if(!/^[A-Za-z ]{3,50}$/.test(area)) {
+alert("Invalid Area");
+return false;
+}
+
+if(document.getElementById("city").value == "")
+return alert("Select City"), false;
+
+if(document.getElementById("state").value == "")
+return alert("Select State"), false;
+
+if(document.getElementById("country").value == "")
+return alert("Select Country"), false;
+
+if(!/^\d{6}$/.test(document.getElementById("pincode").value)) {
+alert("Pincode must be exactly 6 digits");
+return false;
+}
+
+let landmark = document.getElementById("landmark").value;
+if(landmark.length > 50) {
+alert("Landmark max 50 characters");
+return false;
+}
+
+let type = document.querySelector('input[name="type"]:checked');
+if(!type) {
+alert("Select Address Type");
+return false;
+}
+
+return true;
+}
+</script>
+
+</body>
+</html>

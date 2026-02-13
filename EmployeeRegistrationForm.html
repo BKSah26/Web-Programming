@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Employee Registration</title>
+<style>
+body { font-family: Arial; }
+.error { color:red; font-size:14px; }
+</style>
+</head>
+
+<body>
+
+<h2>Employee Registration Form</h2>
+
+<form onsubmit="return validateForm()">
+
+Name:
+<input type="text" id="name"><br><br>
+
+Email:
+<input type="text" id="email"><br><br>
+
+Password:
+<input type="password" id="password" onkeyup="checkStrength()">
+<span id="strength"></span><br><br>
+
+Mobile:
+<input type="text" id="mobile"><br><br>
+
+Gender:
+<input type="radio" name="gender" value="Male">Male
+<input type="radio" name="gender" value="Female">Female<br><br>
+
+Department:
+<select id="dept">
+<option value="">Select Department</option>
+<option>HR</option>
+<option>IT</option>
+<option>Finance</option>
+</select><br><br>
+
+Skills:<br>
+<input type="checkbox" name="skill" value="HTML">HTML
+<input type="checkbox" name="skill" value="CSS">CSS
+<input type="checkbox" name="skill" value="JS">JS
+<input type="checkbox" name="skill" value="Python">Python
+<input type="checkbox" name="skill" value="Java">Java<br><br>
+
+<input type="submit" value="Register">
+
+</form>
+
+<script>
+function validateForm() {
+
+let name = document.getElementById("name").value;
+let email = document.getElementById("email").value;
+let password = document.getElementById("password").value;
+let mobile = document.getElementById("mobile").value;
+let dept = document.getElementById("dept").value;
+let gender = document.querySelector('input[name="gender"]:checked');
+let skills = document.querySelectorAll('input[name="skill"]:checked');
+
+let namePattern = /^[A-Za-z]{3,}$/;
+if(!namePattern.test(name)) {
+alert("Name must contain only alphabets and minimum 3 characters");
+return false;
+}
+
+let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+if(!emailPattern.test(email)) {
+alert("Invalid Email");
+return false;
+}
+
+if(!/^\d{10}$/.test(mobile)) {
+alert("Mobile must be exactly 10 digits");
+return false;
+}
+
+if(!gender) {
+alert("Select gender");
+return false;
+}
+
+if(dept == "") {
+alert("Select department");
+return false;
+}
+
+if(skills.length < 1) {
+alert("Select at least one skill");
+return false;
+}
+
+return true;
+}
+
+function checkStrength() {
+let pwd = document.getElementById("password").value;
+let strength = document.getElementById("strength");
+
+if(pwd.length < 6)
+strength.innerHTML = "Weak";
+else if(/[A-Za-z]/.test(pwd) && /\d/.test(pwd))
+strength.innerHTML = "Medium";
+if(/[A-Z]/.test(pwd) && /[^A-Za-z0-9]/.test(pwd))
+strength.innerHTML = "Strong";
+}
+</script>
+
+</body>
+</html>
