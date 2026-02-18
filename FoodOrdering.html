@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>FoodLane — Order Food Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #fdf8f0;
+    --white: #ffffff;
+    --accent: #e85d04;
+    --accent2: #dc2f02;
+    --green: #2d6a4f;
+    --dark: #1a1209;
+    --text: #2d2010;
+    --muted: #9a8570;
+    --border: #e8ddd0;
+    --radius: 16px;
+    --shadow: 0 4px 20px rgba(100,60,0,0.1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); font-family: 'Nunito', sans-serif; color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--dark);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    height: 64px;
+  }
+  .logo { font-family: 'Fraunces', serif; font-size: 1.7rem; color: #fff; }
+  .logo span { color: var(--accent); }
+  .order-btn {
+    background: var(--accent); color: white;
+    border: none; padding: 0.55rem 1.2rem;
+    border-radius: 100px; font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 0.9rem; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .order-btn:hover { background: var(--accent2); }
+
+  /* PAGES */
+  .page { display: none; animation: fadeIn 0.35s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+  /* MENU LAYOUT */
+  .menu-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 0;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  @media(max-width:768px) { .menu-layout { grid-template-columns: 1fr; } }
+
+  /* MENU SECTION */
+  .menu-section { padding: 2rem; }
+  .cat-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem; margin: 1.5rem 0 1rem;
+    display: flex; align-items: center; gap: 0.6rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px dashed var(--border);
+  }
+  .cat-title:first-child { margin-top: 0; }
+
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem; }
+  .menu-item {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.2rem;
+    display: flex; flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .menu-item:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(100,60,0,0.15); }
+  .item-emoji { font-size: 3rem; text-align: center; margin-bottom: 0.6rem; }
+  .item-name { font-weight: 800; font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .item-desc { font-size: 0.77rem; color: var(--muted); margin-bottom: 0.7rem; flex: 1; line-height: 1.4; }
+  .item-footer { display: flex; align-items: center; justify-content: space-between; }
+  .item-price { font-weight: 800; font-size: 1rem; color: var(--accent); }
+  .qty-ctrl { display: flex; align-items: center; gap: 0.3rem; }
+  .qbtn {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: var(--dark); color: white; border: none;
+    font-size: 1.1rem; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .qbtn:hover { background: var(--accent); }
+  .qnum { font-weight: 800; font-size: 0.9rem; min-width: 20px; text-align: center; }
+
+  /* ORDER PANEL (sticky sidebar) */
+  .order-panel {
+    background: var(--white);
+    border-left: 1px solid var(--border);
+    min-height: calc(100vh - 64px);
+    padding: 1.5rem;
+    position: sticky; top: 64px;
+    align-self: start;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+  .op-title { font-family: 'Fraunces', serif; font-size: 1.4rem; margin-bottom: 1.2rem; }
+  .op-empty { text-align: center; padding: 2rem 0; color: var(--muted); }
+  .op-empty .oei { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
+
+  .order-item { display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+  .oi-emoji { font-size: 1.5rem; flex-shrink: 0; }
+  .oi-info { flex: 1; }
+  .oi-name { font-weight: 700; font-size: 0.88rem; }
+  .oi-price { font-size: 0.8rem; color: var(--muted); }
+  .oi-ctrl { display: flex; align-items: center; gap: 0.3rem; }
+  .oi-q { font-weight: 700; font-size: 0.85rem; min-width: 18px; text-align: center; }
+  .oi-remove { cursor: pointer; color: #cc3333; font-size: 1rem; margin-left: 0.3rem; }
+
+  .op-total { margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--dark); }
+  .op-total-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
+  .op-total-row.grand { font-weight: 800; font-size: 1.1rem; color: var(--accent); }
+  .op-checkout { background: var(--dark); color: white; border: none; width: 100%; padding: 0.9rem; border-radius: 10px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem; cursor: pointer; margin-top: 0.8rem; transition: background 0.2s; }
+  .op-checkout:hover { background: var(--accent); }
+
+  /* FORMS */
+  .form-wrap { max-width: 580px; margin: 2rem auto; padding: 0 1.5rem; }
+  .form-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 2rem; margin-bottom: 1.2rem; }
+  .form-card h2 { font-family: 'Fraunces', serif; font-size: 1.5rem; margin-bottom: 1.3rem; }
+  .fg { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.9rem; }
+  label { font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  input, textarea { background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 0.7rem 0.9rem; color: var(--text); font-family: 'Nunito', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; width: 100%; }
+  textarea { resize: vertical; min-height: 80px; }
+  input:focus, textarea:focus { border-color: var(--accent); }
+  input.error, textarea.error { border-color: #cc3333; }
+  .err { color: #cc3333; font-size: 0.77rem; min-height: 1em; }
+
+  .btn { border: none; border-radius: 10px; padding: 0.85rem 2rem; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
+  .btn-primary { background: var(--accent); color: white; width: 100%; }
+  .btn-primary:hover { background: var(--accent2); }
+  .btn-secondary { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { background: #ede8e0; }
+  .btn-success { background: var(--green); color: white; width: 100%; }
+  .btn-success:hover { background: #216040; }
+  .btn-row { display: flex; gap: 1rem; margin-top: 1rem; }
+
+  /* ORDER SUMMARY */
+  .sum-item { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .sum-item:last-child { border-bottom: none; }
+  .sum-total { display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 2px solid var(--dark); }
+  .sum-total span:last-child { color: var(--accent); }
+
+  /* RECEIPT */
+  .receipt-page { max-width: 600px; margin: 3rem auto; padding: 0 1.5rem; text-align: center; }
+  .receipt-icon { font-size: 5rem; display: block; margin-bottom: 0.8rem; }
+  .receipt-heading { font-family: 'Fraunces', serif; font-size: 2rem; color: var(--green); margin-bottom: 0.3rem; }
+  .order-num { color: var(--muted); font-size: 0.88rem; margin-bottom: 1.5rem; }
+  .receipt-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.8rem; text-align: left; margin-bottom: 1.5rem; }
+  .rc-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .rc-row:last-child { border-bottom: none; }
+  .rc-label { color: var(--muted); }
+  .rc-val { font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Food<span>Lane</span></div>
+  <button class="order-btn" onclick="goPage('pageMenu')">🍽️ View Order (<span id="orderCount">0</span>)</button>
+</header>
+
+<!-- PAGE: MENU -->
+<div class="page active" id="pageMenu">
+  <div class="menu-layout">
+    <div class="menu-section">
+      <div class="cat-title">🥗 Starters</div>
+      <div class="menu-grid" id="starterGrid"></div>
+      <div class="cat-title">🍛 Main Course</div>
+      <div class="menu-grid" id="mainGrid"></div>
+      <div class="cat-title">🍮 Desserts</div>
+      <div class="menu-grid" id="dessertGrid"></div>
+    </div>
+
+    <!-- Order Panel -->
+    <div class="order-panel">
+      <div class="op-title">🧾 Your Order</div>
+      <div class="op-empty" id="opEmpty"><span class="oei">🍽️</span>No items yet.<br/>Start adding from the menu!</div>
+      <div id="opItems"></div>
+      <div id="opTotal" style="display:none;">
+        <div class="op-total">
+          <div class="op-total-row"><span>Subtotal</span><span>₹<span id="subtotalVal">0</span></span></div>
+          <div class="op-total-row"><span>Delivery (Free)</span><span>₹0</span></div>
+          <div class="op-total-row grand"><span>Total</span><span>₹<span id="totalVal">0</span></span></div>
+        </div>
+        <button class="op-checkout" onclick="goPage('pageCheckout')">Proceed to Checkout →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: CHECKOUT -->
+<div class="page" id="pageCheckout">
+  <div class="form-wrap">
+    <div class="form-card">
+      <h2>Delivery Details</h2>
+      <div class="fg">
+        <label>Customer Name</label>
+        <input type="text" id="fname" placeholder="Arjun Sharma"/>
+        <span class="err" id="err-fname"></span>
+      </div>
+      <div class="fg">
+        <label>Delivery Address</label>
+        <textarea id="faddr" placeholder="Flat 4B, Green Park Apartments, Chennai - 600020"></textarea>
+        <span class="err" id="err-faddr"></span>
+      </div>
+      <div class="fg">
+        <label>Phone Number</label>
+        <input type="tel" id="fphone" placeholder="9876543210" maxlength="10"/>
+        <span class="err" id="err-fphone"></span>
+      </div>
+      <div class="fg">
+        <label>Email Address</label>
+        <input type="email" id="femail" placeholder="arjun@email.com"/>
+        <span class="err" id="err-femail"></span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="goPage('pageMenu')">← Back to Menu</button>
+        <button class="btn btn-primary" onclick="validateCheckout()" style="flex:1;">View Order Summary →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: ORDER SUMMARY -->
+<div class="page" id="pageOrderSummary">
+  <div class="form-wrap">
+    <div class="form-card">
+      <h2>Order Summary</h2>
+      <div id="summaryItems"></div>
+      <div class="sum-total"><span>Total</span><span>₹<span id="sumTotal">0</span></span></div>
+    </div>
+    <div class="form-card">
+      <h2>Delivery Info</h2>
+      <div id="deliveryInfo"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goPage('pageCheckout')">← Edit</button>
+      <button class="btn btn-success" onclick="placeOrder()" style="flex:1;">🍴 Place Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: RECEIPT -->
+<div class="page" id="pageReceipt">
+  <div class="receipt-page">
+    <span class="receipt-icon">🎉</span>
+    <div class="receipt-heading">Order Confirmed!</div>
+    <div class="order-num" id="orderNum"></div>
+    <div class="receipt-card" id="receiptCard"></div>
+    <div class="receipt-card" id="deliveryCard"></div>
+    <button class="btn btn-primary" onclick="resetApp()">🍽️ Order Again</button>
+  </div>
+</div>
+
+<script>
+const MENU = {
+  starters: [
+    { emoji:'🥗', name:'Caesar Salad', desc:'Crisp romaine, parmesan & croutons', price: 199 },
+    { emoji:'🍲', name:'Tomato Soup', desc:'Classic creamy tomato with herbs', price: 149 },
+    { emoji:'🧆', name:'Paneer Tikka', desc:'Marinated cottage cheese in tandoor', price: 249 },
+    { emoji:'🍤', name:'Crispy Calamari', desc:'Lightly battered squid, aioli dip', price: 299 },
+  ],
+  main: [
+    { emoji:'🍛', name:'Butter Chicken', desc:'Creamy tomato gravy, naan', price: 349 },
+    { emoji:'🍝', name:'Pasta Arrabiata', desc:'Spicy tomato sauce, penne', price: 279 },
+    { emoji:'🍚', name:'Veg Biryani', desc:'Fragrant basmati, veggies & saffron', price: 299 },
+    { emoji:'🥩', name:'Grilled Steak', desc:'200g sirloin, grilled veggies', price: 599 },
+    { emoji:'🍜', name:'Ramen Bowl', desc:'Rich tonkotsu broth, chashu pork', price: 399 },
+  ],
+  desserts: [
+    { emoji:'🍫', name:'Chocolate Lava Cake', desc:'Warm cake, vanilla ice cream', price: 199 },
+    { emoji:'🍦', name:'Mango Sorbet', desc:'Fresh alphonso mango, dairy-free', price: 149 },
+    { emoji:'🧁', name:'Red Velvet Cupcake', desc:'Cream cheese frosting, moist', price: 129 },
+    { emoji:'🍮', name:'Crème Brûlée', desc:'Classic French custard dessert', price: 249 },
+  ]
+};
+
+let order = {}; // key: "cat-index", val: { item, qty }
+let customer = {};
+
+function buildMenu(items, containerId, cat) {
+  const grid = document.getElementById(containerId);
+  grid.innerHTML = '';
+  items.forEach((item, i) => {
+    const key = cat + '-' + i;
+    const div = document.createElement('div');
+    div.className = 'menu-item';
+    div.innerHTML = `
+      <div class="item-emoji">${item.emoji}</div>
+      <div class="item-name">${item.name}</div>
+      <div class="item-desc">${item.desc}</div>
+      <div class="item-footer">
+        <span class="item-price">₹${item.price}</span>
+        <div class="qty-ctrl">
+          <button class="qbtn" onclick="changeQty('${key}',${i},'${cat}',-1)">−</button>
+          <span class="qnum" id="qn-${key}">0</span>
+          <button class="qbtn" onclick="changeQty('${key}',${i},'${cat}',1)">+</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function changeQty(key, idx, cat, delta) {
+  const items = cat === 'starter' ? MENU.starters : cat === 'main' ? MENU.main : MENU.desserts;
+  const item = items[idx];
+  const cur = order[key] ? order[key].qty : 0;
+  const next = Math.max(0, cur + delta);
+  if(next === 0) { delete order[key]; }
+  else { order[key] = { item, qty: next }; }
+  const el = document.getElementById('qn-' + key);
+  if(el) el.textContent = next;
+  renderOrderPanel();
+}
+
+function renderOrderPanel() {
+  const keys = Object.keys(order);
+  const total = keys.reduce((s,k) => s + order[k].item.price * order[k].qty, 0);
+  const count = keys.reduce((s,k) => s + order[k].qty, 0);
+  document.getElementById('orderCount').textContent = count;
+  const itemsDiv = document.getElementById('opItems');
+  const empty = document.getElementById('opEmpty');
+  const totalDiv = document.getElementById('opTotal');
+
+  if(keys.length === 0) { empty.style.display=''; itemsDiv.innerHTML=''; totalDiv.style.display='none'; return; }
+  empty.style.display = 'none'; totalDiv.style.display = 'block';
+
+  itemsDiv.innerHTML = '';
+  keys.forEach(k => {
+    const {item, qty} = order[k];
+    const div = document.createElement('div');
+    div.className = 'order-item';
+    div.innerHTML = `
+      <div class="oi-emoji">${item.emoji}</div>
+      <div class="oi-info">
+        <div class="oi-name">${item.name}</div>
+        <div class="oi-price">₹${item.price} × ${qty} = ₹${(item.price*qty).toLocaleString('en-IN')}</div>
+      </div>
+      <span class="oi-remove" onclick="removeItem('${k}')" title="Remove">✕</span>
+    `;
+    itemsDiv.appendChild(div);
+  });
+  document.getElementById('subtotalVal').textContent = total.toLocaleString('en-IN');
+  document.getElementById('totalVal').textContent = total.toLocaleString('en-IN');
+}
+
+function removeItem(key) {
+  // Parse key to get cat and idx
+  const parts = key.split('-');
+  const cat = parts[0]; const idx = parseInt(parts[1]);
+  delete order[key];
+  const el = document.getElementById('qn-' + key);
+  if(el) el.textContent = '0';
+  renderOrderPanel();
+}
+
+// VALIDATION
+function validateCheckout() {
+  let ok = true;
+  const name = document.getElementById('fname').value.trim();
+  const addr = document.getElementById('faddr').value.trim();
+  const phone = document.getElementById('fphone').value.trim();
+  const email = document.getElementById('femail').value.trim();
+
+  if(name.length < 2) { se('fname','Enter valid name.'); ok=false; } else ce('fname');
+  if(addr.length < 10) { se('faddr','Enter full delivery address.'); ok=false; } else ce('faddr');
+  if(!/^\d{10}$/.test(phone)) { se('fphone','Enter valid 10-digit phone.'); ok=false; } else ce('fphone');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { se('femail','Enter valid email.'); ok=false; } else ce('femail');
+
+  if(ok) {
+    customer = {name,addr,phone,email};
+    buildSummary();
+    goPage('pageOrderSummary');
+  }
+}
+
+function buildSummary() {
+  let html = ''; let total = 0;
+  Object.keys(order).forEach(k => {
+    const {item,qty} = order[k];
+    total += item.price * qty;
+    html += `<div class="sum-item"><span>${item.emoji} ${item.name} × ${qty}</span><span>₹${(item.price*qty).toLocaleString('en-IN')}</span></div>`;
+  });
+  document.getElementById('summaryItems').innerHTML = html;
+  document.getElementById('sumTotal').textContent = total.toLocaleString('en-IN');
+  document.getElementById('deliveryInfo').innerHTML = `
+    <div class="sum-item"><span style="color:var(--muted)">Name</span><span>${customer.name}</span></div>
+    <div class="sum-item"><span style="color:var(--muted)">Address</span><span>${customer.addr}</span></div>
+    <div class="sum-item"><span style="color:var(--muted)">Phone</span><span>${customer.phone}</span></div>
+    <div class="sum-item"><span style="color:var(--muted)">Email</span><span>${customer.email}</span></div>
+  `;
+}
+
+function placeOrder() {
+  const oid = 'FL' + Date.now().toString().slice(-8);
+  document.getElementById('orderNum').textContent = 'Order #' + oid + ' · Estimated: 35–45 min';
+  let itemsHtml = ''; let total = 0;
+  Object.keys(order).forEach(k => {
+    const {item,qty} = order[k];
+    total += item.price * qty;
+    itemsHtml += `<div class="rc-row"><span class="rc-label">${item.emoji} ${item.name} × ${qty}</span><span class="rc-val">₹${(item.price*qty).toLocaleString('en-IN')}</span></div>`;
+  });
+  itemsHtml += `<div class="rc-row" style="font-weight:800;font-size:1.05rem;"><span class="rc-label">Total Paid</span><span class="rc-val" style="color:var(--accent);">₹${total.toLocaleString('en-IN')}</span></div>`;
+  document.getElementById('receiptCard').innerHTML = `<div style="font-weight:800;margin-bottom:0.8rem;font-size:1.05rem;">🍴 Items Ordered</div>${itemsHtml}`;
+  document.getElementById('deliveryCard').innerHTML = `
+    <div style="font-weight:800;margin-bottom:0.8rem;font-size:1.05rem;">🚗 Delivery Info</div>
+    <div class="rc-row"><span class="rc-label">Name</span><span class="rc-val">${customer.name}</span></div>
+    <div class="rc-row"><span class="rc-label">Address</span><span class="rc-val">${customer.addr}</span></div>
+    <div class="rc-row"><span class="rc-label">Phone</span><span class="rc-val">${customer.phone}</span></div>
+  `;
+  goPage('pageReceipt');
+}
+
+function resetApp() {
+  order = {}; customer = {};
+  buildMenu(MENU.starters,'starterGrid','starter');
+  buildMenu(MENU.main,'mainGrid','main');
+  buildMenu(MENU.desserts,'dessertGrid','dessert');
+  renderOrderPanel();
+  goPage('pageMenu');
+}
+
+function goPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+function se(id,msg){ document.getElementById(id).classList.add('error'); document.getElementById('err-'+id).textContent=msg; }
+function ce(id){ document.getElementById(id).classList.remove('error'); document.getElementById('err-'+id).textContent=''; }
+
+// INIT
+buildMenu(MENU.starters,'starterGrid','starter');
+buildMenu(MENU.main,'mainGrid','main');
+buildMenu(MENU.desserts,'dessertGrid','dessert');
+</script>
+</body>
+</html>

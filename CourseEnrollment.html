@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>EduEnroll — Course Enrollment</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #f0f4ff;
+    --white: #ffffff;
+    --navy: #1e3a5f;
+    --blue: #2563eb;
+    --teal: #0d9488;
+    --amber: #d97706;
+    --red: #dc2626;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --radius: 14px;
+    --shadow: 0 4px 20px rgba(30,58,95,0.1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); font-family: 'Space Grotesk', sans-serif; color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--navy);
+    padding: 0 2rem; height: 68px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+  }
+  .logo { font-family: 'Lora', serif; font-size: 1.5rem; color: #fff; }
+  .logo span { color: #60a5fa; font-style: italic; }
+  .hdr-right { color: #94a3b8; font-size: 0.85rem; }
+
+  /* PROGRESS STEPPER */
+  .stepper {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex; align-items: center;
+    justify-content: center; gap: 0;
+    overflow-x: auto;
+  }
+  .stp { display: flex; align-items: center; gap: 0.6rem; white-space: nowrap; }
+  .stp-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 700;
+    background: var(--border); color: var(--muted);
+    transition: all 0.3s;
+  }
+  .stp-label { font-size: 0.82rem; font-weight: 600; color: var(--muted); }
+  .stp.active .stp-num { background: var(--blue); color: white; box-shadow: 0 0 0 4px #2563eb22; }
+  .stp.active .stp-label { color: var(--blue); }
+  .stp.done .stp-num { background: var(--teal); color: white; }
+  .stp.done .stp-label { color: var(--teal); }
+  .stp-line { width: 40px; height: 2px; background: var(--border); margin: 0 0.4rem; }
+  .stp.done + .stp-line { background: var(--teal); }
+
+  /* PAGES */
+  .page { display: none; max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; animation: up 0.35s ease; }
+  .page.active { display: block; }
+  @keyframes up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+  .page-header { margin-bottom: 1.8rem; }
+  .page-header h1 { font-family: 'Lora', serif; font-size: 1.8rem; margin-bottom: 0.3rem; color: var(--navy); }
+  .page-header p { color: var(--muted); font-size: 0.9rem; }
+
+  /* STUDENT FORM */
+  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.8rem; margin-bottom: 1.5rem; }
+  .card h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--navy); padding-bottom: 0.7rem; border-bottom: 2px solid var(--bg); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:560px){ .form-grid { grid-template-columns:1fr; } }
+  .fg { display:flex; flex-direction:column; gap:0.35rem; }
+  .fg.full { grid-column:1/-1; }
+  label { font-size:0.78rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+  input { background:var(--bg); border:1.5px solid var(--border); border-radius:10px; padding:0.7rem 0.9rem; color:var(--text); font-family:'Space Grotesk',sans-serif; font-size:0.95rem; outline:none; transition:border-color 0.2s; width:100%; }
+  input:focus { border-color:var(--blue); }
+  input.error { border-color:var(--red); }
+  .err { color:var(--red); font-size:0.77rem; min-height:1em; }
+
+  /* COURSES */
+  .courses-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1rem; }
+  .course-card {
+    background: var(--white);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.3rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .course-card:hover { border-color: var(--blue); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .course-card.selected { border-color: var(--blue); background: #eff6ff; }
+  .course-card.selected::after { content:'✓'; position:absolute; top:12px; right:14px; background:var(--blue); color:white; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; }
+  .course-checkbox { position:absolute; opacity:0; }
+  .cc-icon { font-size:2rem; margin-bottom:0.6rem; display:block; }
+  .cc-name { font-weight:700; font-size:1rem; margin-bottom:0.25rem; }
+  .cc-instructor { font-size:0.8rem; color:var(--muted); margin-bottom:0.3rem; }
+  .cc-duration { font-size:0.78rem; color:var(--muted); margin-bottom:0.7rem; }
+  .cc-meta { display:flex; justify-content:space-between; align-items:center; }
+  .cc-fee { font-weight:800; font-size:1rem; color:var(--blue); }
+  .cc-tag { font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:100px; font-weight:700; }
+  .tag-beginner { background:#dcfce7; color:#166534; }
+  .tag-intermediate { background:#fef3c7; color:#92400e; }
+  .tag-advanced { background:#fee2e2; color:#991b1b; }
+
+  /* FEE SUMMARY */
+  .fee-card { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow); padding:1.4rem; margin-bottom:1.5rem; }
+  .fee-card h3 { font-size:0.9rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin-bottom:0.8rem; }
+  .fee-item { display:flex; justify-content:space-between; padding:0.5rem 0; border-bottom:1px solid var(--border); font-size:0.9rem; }
+  .fee-item:last-child { border-bottom:none; }
+  .fee-grand { display:flex; justify-content:space-between; margin-top:0.8rem; padding-top:0.8rem; border-top:2px solid var(--navy); font-weight:800; font-size:1.1rem; }
+  .fee-grand .val { color:var(--blue); }
+
+  /* BUTTONS */
+  .btn { border:none; border-radius:10px; padding:0.8rem 2rem; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:0.95rem; cursor:pointer; transition:all 0.2s; }
+  .btn-primary { background:var(--blue); color:white; }
+  .btn-primary:hover { background:#1d4ed8; }
+  .btn-secondary { background:var(--bg); color:var(--text); border:1.5px solid var(--border); }
+  .btn-secondary:hover { background:#e2e8f0; }
+  .btn-success { background:var(--teal); color:white; }
+  .btn-success:hover { background:#0f766e; }
+  .btn-row { display:flex; gap:0.8rem; justify-content:flex-end; flex-wrap:wrap; margin-top:1.2rem; }
+
+  /* CONFIRM TABLE */
+  .confirm-table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+  .confirm-table td { padding:0.6rem 0; border-bottom:1px solid var(--border); }
+  .confirm-table td:last-child { border-bottom:none; }
+  .confirm-table .td-label { color:var(--muted); width:40%; }
+  .confirm-table .td-val { font-weight:600; }
+
+  /* SUCCESS */
+  .success-page { max-width:640px; margin:3rem auto; padding:0 1.5rem; }
+  .success-banner { background:linear-gradient(135deg,#ecfdf5,#f0f9ff); border:2px solid #6ee7b744; border-radius:var(--radius); padding:2.5rem; text-align:center; margin-bottom:1.5rem; box-shadow:var(--shadow); }
+  .success-icon { font-size:4rem; display:block; margin-bottom:0.8rem; }
+  .success-title { font-family:'Lora',serif; font-size:2rem; color:var(--teal); margin-bottom:0.3rem; }
+  .enroll-id { color:var(--muted); font-size:0.88rem; }
+  .receipt-card { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow); padding:1.5rem; margin-bottom:1rem; }
+  .rc-head { font-weight:700; font-size:1rem; color:var(--navy); margin-bottom:0.8rem; padding-bottom:0.5rem; border-bottom:2px solid var(--bg); }
+  .rc-row { display:flex; justify-content:space-between; padding:0.5rem 0; border-bottom:1px solid var(--border); font-size:0.9rem; }
+  .rc-row:last-child { border-bottom:none; }
+  .rc-label { color:var(--muted); }
+  .rc-val { font-weight:600; }
+
+  .no-courses-msg { background:#fff7ed; border:1px solid #fed7aa; border-radius:10px; padding:0.8rem 1rem; color:var(--amber); font-size:0.88rem; margin-bottom:1rem; display:none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Edu<span>Enroll</span></div>
+  <div class="hdr-right">Student Course Enrollment Portal</div>
+</header>
+
+<!-- STEPPER -->
+<div class="stepper">
+  <div class="stp active" id="stp1"><div class="stp-num">1</div><span class="stp-label">Student Info</span></div>
+  <div class="stp-line"></div>
+  <div class="stp" id="stp2"><div class="stp-num">2</div><span class="stp-label">Select Courses</span></div>
+  <div class="stp-line"></div>
+  <div class="stp" id="stp3"><div class="stp-num">3</div><span class="stp-label">Confirm</span></div>
+  <div class="stp-line"></div>
+  <div class="stp" id="stp4"><div class="stp-num">4</div><span class="stp-label">Enrolled!</span></div>
+</div>
+
+<!-- PAGE 1: STUDENT INFO -->
+<div class="page active" id="page1">
+  <div class="page-header">
+    <h1>Student Information</h1>
+    <p>Please enter your details to begin course enrollment.</p>
+  </div>
+  <div class="card">
+    <h2>Personal Details</h2>
+    <div class="form-grid">
+      <div class="fg">
+        <label>Student Name</label>
+        <input type="text" id="sname" placeholder="Priya Krishnamurthy"/>
+        <span class="err" id="err-sname"></span>
+      </div>
+      <div class="fg">
+        <label>Registration Number</label>
+        <input type="text" id="sreg" placeholder="REG2024001"/>
+        <span class="err" id="err-sreg"></span>
+      </div>
+      <div class="fg">
+        <label>Phone Number</label>
+        <input type="tel" id="sphone" placeholder="9876543210" maxlength="10"/>
+        <span class="err" id="err-sphone"></span>
+      </div>
+      <div class="fg">
+        <label>Email Address</label>
+        <input type="email" id="semail" placeholder="priya@college.edu"/>
+        <span class="err" id="err-semail"></span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="validateStudent()">Continue to Courses →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: COURSES -->
+<div class="page" id="page2">
+  <div class="page-header">
+    <h1>Available Courses</h1>
+    <p>Select one or more courses to enroll in. Fees are calculated automatically.</p>
+  </div>
+  <div class="courses-grid" id="coursesGrid"></div>
+  <div class="no-courses-msg" id="noCoursesMsg">⚠️ Please select at least one course to proceed.</div>
+  <div class="fee-card" id="feeCard" style="display:none;">
+    <h3>Fee Summary</h3>
+    <div id="feeItems"></div>
+    <div class="fee-grand">
+      <span>Total Fee</span>
+      <span class="val">₹<span id="feeTotalVal">0</span></span>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goPage(1)">← Back</button>
+    <button class="btn btn-primary" onclick="validateCourses()">Review Enrollment →</button>
+  </div>
+</div>
+
+<!-- PAGE 3: CONFIRM -->
+<div class="page" id="page3">
+  <div class="page-header">
+    <h1>Review Your Enrollment</h1>
+    <p>Please confirm all details before finalizing.</p>
+  </div>
+  <div class="card">
+    <h2>Student Details</h2>
+    <table class="confirm-table"><tbody id="studentConfirm"></tbody></table>
+  </div>
+  <div class="card">
+    <h2>Selected Courses</h2>
+    <div id="coursesConfirm"></div>
+    <div class="fee-grand" style="margin-top:1rem;padding-top:1rem;border-top:2px solid var(--navy);">
+      <span>Total Fee</span>
+      <span class="val" style="color:var(--blue);">₹<span id="confirmTotal">0</span></span>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goPage(2)">← Edit Courses</button>
+    <button class="btn btn-success" onclick="finalEnroll()">✔ Confirm Enrollment</button>
+  </div>
+</div>
+
+<!-- PAGE 4: SUCCESS -->
+<div class="page" id="page4">
+  <div class="success-page">
+    <div class="success-banner">
+      <span class="success-icon">🎓</span>
+      <div class="success-title">Enrollment Successful!</div>
+      <div class="enroll-id" id="enrollId"></div>
+    </div>
+    <div class="receipt-card">
+      <div class="rc-head">👤 Student Details</div>
+      <div id="receiptStudent"></div>
+    </div>
+    <div class="receipt-card">
+      <div class="rc-head">📚 Enrolled Courses</div>
+      <div id="receiptCourses"></div>
+      <div class="fee-grand" style="margin-top:0.8rem;padding-top:0.8rem;border-top:2px solid var(--navy);">
+        <span>Total Fee Paid</span>
+        <span class="val" style="color:var(--teal);">₹<span id="receiptTotal">0</span></span>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:1.5rem;">
+      <button class="btn btn-primary" onclick="resetApp()">🔄 New Enrollment</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const COURSES = [
+  { emoji:'🐍', name:'Python Programming', instructor:'Dr. Ramesh Iyer', duration:'12 Weeks', fee: 4999, level:'beginner' },
+  { emoji:'🌐', name:'Full Stack Web Dev', instructor:'Prof. Anita Sharma', duration:'20 Weeks', fee: 9999, level:'intermediate' },
+  { emoji:'📊', name:'Data Science & ML', instructor:'Dr. Karthik Rajan', duration:'16 Weeks', fee: 12999, level:'advanced' },
+  { emoji:'☁️', name:'Cloud Computing (AWS)', instructor:'Mr. Vikram Nair', duration:'10 Weeks', fee: 7499, level:'intermediate' },
+  { emoji:'🔐', name:'Cybersecurity Fundamentals', instructor:'Dr. Priya Menon', duration:'8 Weeks', fee: 5999, level:'beginner' },
+  { emoji:'🤖', name:'Artificial Intelligence', instructor:'Prof. Suresh Kumar', duration:'18 Weeks', fee: 14999, level:'advanced' },
+  { emoji:'📱', name:'Mobile App Development', instructor:'Ms. Divya Pillai', duration:'14 Weeks', fee: 8999, level:'intermediate' },
+  { emoji:'🗄️', name:'Database Management', instructor:'Dr. Arun Mehta', duration:'6 Weeks', fee: 2999, level:'beginner' },
+];
+
+let selectedCourses = new Set();
+let student = {};
+
+function buildCourses() {
+  const grid = document.getElementById('coursesGrid');
+  grid.innerHTML = '';
+  COURSES.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'course-card' + (selectedCourses.has(i) ? ' selected' : '');
+    div.id = 'cc-' + i;
+    div.innerHTML = `
+      <span class="cc-icon">${c.emoji}</span>
+      <div class="cc-name">${c.name}</div>
+      <div class="cc-instructor">👤 ${c.instructor}</div>
+      <div class="cc-duration">⏱ ${c.duration}</div>
+      <div class="cc-meta">
+        <span class="cc-fee">₹${c.fee.toLocaleString('en-IN')}</span>
+        <span class="cc-tag tag-${c.level}">${c.level.charAt(0).toUpperCase()+c.level.slice(1)}</span>
+      </div>
+    `;
+    div.addEventListener('click', () => toggleCourse(i, div));
+    grid.appendChild(div);
+  });
+  updateFeeCard();
+}
+
+function toggleCourse(i, el) {
+  if(selectedCourses.has(i)) { selectedCourses.delete(i); el.classList.remove('selected'); }
+  else { selectedCourses.add(i); el.classList.add('selected'); }
+  updateFeeCard();
+}
+
+function updateFeeCard() {
+  const feeCard = document.getElementById('feeCard');
+  if(selectedCourses.size === 0) { feeCard.style.display='none'; return; }
+  feeCard.style.display = 'block';
+  let total = 0; let html = '';
+  selectedCourses.forEach(i => {
+    const c = COURSES[i]; total += c.fee;
+    html += `<div class="fee-item"><span>${c.emoji} ${c.name}</span><span>₹${c.fee.toLocaleString('en-IN')}</span></div>`;
+  });
+  document.getElementById('feeItems').innerHTML = html;
+  document.getElementById('feeTotalVal').textContent = total.toLocaleString('en-IN');
+}
+
+// VALIDATION
+function validateStudent() {
+  let ok = true;
+  const name = document.getElementById('sname').value.trim();
+  const reg = document.getElementById('sreg').value.trim();
+  const phone = document.getElementById('sphone').value.trim();
+  const email = document.getElementById('semail').value.trim();
+
+  if(name.length < 2) { se('sname','Enter a valid name.'); ok=false; } else ce('sname');
+  if(reg.length < 3) { se('sreg','Enter a valid registration number.'); ok=false; } else ce('sreg');
+  if(!/^\d{10}$/.test(phone)) { se('sphone','Enter valid 10-digit phone.'); ok=false; } else ce('sphone');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { se('semail','Enter a valid email.'); ok=false; } else ce('semail');
+
+  if(ok) { student = {name,reg,phone,email}; goPage(2); }
+}
+
+function validateCourses() {
+  const msg = document.getElementById('noCoursesMsg');
+  if(selectedCourses.size === 0) { msg.style.display='block'; return; }
+  msg.style.display = 'none';
+  buildConfirmPage();
+  goPage(3);
+}
+
+function buildConfirmPage() {
+  document.getElementById('studentConfirm').innerHTML = `
+    <tr><td class="td-label">Name</td><td class="td-val">${student.name}</td></tr>
+    <tr><td class="td-label">Registration No.</td><td class="td-val">${student.reg}</td></tr>
+    <tr><td class="td-label">Phone</td><td class="td-val">${student.phone}</td></tr>
+    <tr><td class="td-label">Email</td><td class="td-val">${student.email}</td></tr>
+  `;
+  let html = ''; let total = 0;
+  selectedCourses.forEach(i => {
+    const c = COURSES[i]; total += c.fee;
+    html += `
+      <div style="display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border);font-size:0.9rem;">
+        <div>${c.emoji} <strong>${c.name}</strong><br/><small style="color:var(--muted)">${c.instructor} · ${c.duration}</small></div>
+        <span style="font-weight:700;">₹${c.fee.toLocaleString('en-IN')}</span>
+      </div>
+    `;
+  });
+  document.getElementById('coursesConfirm').innerHTML = html;
+  document.getElementById('confirmTotal').textContent = total.toLocaleString('en-IN');
+}
+
+function finalEnroll() {
+  const eid = 'EE' + Date.now().toString().slice(-8);
+  document.getElementById('enrollId').textContent = 'Enrollment ID: ' + eid + ' · ' + new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+
+  document.getElementById('receiptStudent').innerHTML = `
+    <div class="rc-row"><span class="rc-label">Name</span><span class="rc-val">${student.name}</span></div>
+    <div class="rc-row"><span class="rc-label">Reg. No.</span><span class="rc-val">${student.reg}</span></div>
+    <div class="rc-row"><span class="rc-label">Email</span><span class="rc-val">${student.email}</span></div>
+    <div class="rc-row"><span class="rc-label">Phone</span><span class="rc-val">${student.phone}</span></div>
+  `;
+
+  let html = ''; let total = 0;
+  selectedCourses.forEach(i => {
+    const c = COURSES[i]; total += c.fee;
+    html += `<div class="rc-row"><span class="rc-label">${c.emoji} ${c.name}</span><span class="rc-val">₹${c.fee.toLocaleString('en-IN')}</span></div>`;
+  });
+  document.getElementById('receiptCourses').innerHTML = html;
+  document.getElementById('receiptTotal').textContent = total.toLocaleString('en-IN');
+  goPage(4);
+}
+
+function resetApp() {
+  selectedCourses.clear(); student = {};
+  ['sname','sreg','sphone','semail'].forEach(id => { document.getElementById(id).value=''; ce(id); });
+  buildCourses();
+  goPage(1);
+}
+
+function goPage(n) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page'+n).classList.add('active');
+  document.querySelectorAll('.stp').forEach((s,i) => {
+    s.classList.remove('active','done');
+    if(i+1===n) s.classList.add('active');
+    else if(i+1<n) s.classList.add('done');
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function se(id,msg){ document.getElementById(id).classList.add('error'); document.getElementById('err-'+id).textContent=msg; }
+function ce(id){ document.getElementById(id).classList.remove('error'); document.getElementById('err-'+id).textContent=''; }
+
+buildCourses();
+</script>
+</body>
+</html>

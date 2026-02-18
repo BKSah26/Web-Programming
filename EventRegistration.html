@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>EventHub — Event Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --accent: #58a6ff;
+    --purple: #8b5cf6;
+    --green: #3fb950;
+    --orange: #f78166;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --border: #30363d;
+    --radius: 12px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text); min-height: 100vh; }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.2rem 2rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: var(--accent); }
+  .logo-tag { font-size: 0.82rem; color: var(--muted); }
+
+  .page { display: none; padding: 2rem; max-width: 1000px; margin: 0 auto; animation: up 0.4s ease; }
+  .page.active { display: block; }
+  @keyframes up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+  .page-title { font-family: 'DM Serif Display', serif; font-size: 2rem; margin-bottom: 0.4rem; }
+  .page-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+
+  /* EVENTS GRID */
+  .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.2rem; margin-bottom: 2rem; }
+  .event-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.3rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .event-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--card-accent, var(--accent));
+  }
+  .event-card:hover { border-color: var(--card-accent, var(--accent)); transform: translateY(-2px); }
+  .event-card.selected { border-color: var(--card-accent, var(--accent)); background: var(--surface2); }
+  .event-card.selected::after { content: '✓'; position: absolute; top: 12px; right: 14px; background: var(--green); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; }
+  .event-emoji { font-size: 2.2rem; margin-bottom: 0.7rem; display: block; }
+  .event-name { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.4rem; }
+  .event-meta { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.7rem; }
+  .event-meta span { font-size: 0.8rem; color: var(--muted); }
+  .event-meta span strong { color: var(--text); }
+  .event-fee { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; padding: 0.25rem 0.75rem; font-size: 0.82rem; font-weight: 700; }
+  .free-badge { background: #2d4a2d; color: var(--green); border-color: #3fb95044; }
+
+  /* FORM */
+  .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.8rem; margin-bottom: 1.5rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .fg { display: flex; flex-direction: column; gap: 0.35rem; }
+  .fg.full { grid-column: 1/-1; }
+  label { font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  input, select {
+    background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 0.7rem 0.9rem;
+    color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem; outline: none; transition: border-color 0.2s;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+  input.error { border-color: var(--orange); }
+  .err { color: var(--orange); font-size: 0.77rem; min-height: 1em; }
+
+  /* FEE PANEL */
+  .fee-panel { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; margin-bottom: 1.5rem; }
+  .fee-row { display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.9rem; border-bottom: 1px solid var(--border); }
+  .fee-row:last-child { border-bottom: none; font-weight: 700; font-size: 1rem; }
+  .fee-label { color: var(--muted); }
+  .fee-val { font-weight: 600; }
+  .fee-total { color: var(--accent); }
+
+  /* BUTTONS */
+  .btn { border: none; border-radius: 8px; padding: 0.8rem 1.8rem; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; }
+  .btn-primary { background: var(--accent); color: #0d1117; }
+  .btn-primary:hover { background: #79bbff; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: #2d333b; }
+  .btn-success { background: var(--green); color: #0d1117; }
+  .btn-success:hover { background: #52c46a; }
+  .btn-row { display: flex; gap: 0.8rem; justify-content: flex-end; flex-wrap: wrap; margin-top: 1.2rem; }
+
+  /* CONFIRM */
+  .confirm-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.2rem; }
+  .cs-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.8rem; }
+  .cr { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .cr:last-child { border-bottom: none; }
+  .cr .cl { color: var(--muted); }
+  .cr .cv { font-weight: 600; }
+  .event-confirm-item { padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; display: flex; justify-content: space-between; }
+  .event-confirm-item:last-child { border-bottom: none; }
+
+  /* SUCCESS */
+  .success-wrap { max-width: 640px; margin: 3rem auto; padding: 0 1.5rem; }
+  .success-banner { background: linear-gradient(135deg, #162a20, #161b22); border: 1px solid #3fb95044; border-radius: var(--radius); padding: 2.5rem; text-align: center; margin-bottom: 1.5rem; }
+  .success-icon { font-size: 4rem; display: block; margin-bottom: 0.8rem; }
+  .success-title { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--green); margin-bottom: 0.3rem; }
+  .reg-id { color: var(--muted); font-size: 0.85rem; }
+  .receipt-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+  .receipt-title { font-weight: 700; margin-bottom: 1rem; color: var(--accent); }
+
+  @media(max-width:580px){ .form-grid { grid-template-columns: 1fr; } .page { padding: 1rem; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">EventHub</div>
+    <div class="logo-tag">Discover & register for amazing events</div>
+  </div>
+</header>
+
+<!-- PAGE 1: Browse Events + Registration Form -->
+<div class="page active" id="page1">
+  <div class="page-title">Upcoming Events</div>
+  <div class="page-sub">Click on events to select them. You can register for multiple events at once.</div>
+
+  <div class="events-grid" id="eventsGrid"></div>
+
+  <div class="fee-panel" id="feePanel" style="display:none;">
+    <div style="font-weight:700;margin-bottom:0.8rem;">Selected Events — Fee Breakdown</div>
+    <div id="feeRows"></div>
+  </div>
+
+  <div class="form-card">
+    <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:1.2rem;">Your Registration Details</h2>
+    <div class="form-grid">
+      <div class="fg">
+        <label>Full Name</label>
+        <input type="text" id="rname" placeholder="Alex Johnson"/>
+        <span class="err" id="err-rname"></span>
+      </div>
+      <div class="fg">
+        <label>Email Address</label>
+        <input type="email" id="remail" placeholder="alex@mail.com"/>
+        <span class="err" id="err-remail"></span>
+      </div>
+      <div class="fg">
+        <label>Phone Number</label>
+        <input type="tel" id="rphone" placeholder="9876543210" maxlength="10"/>
+        <span class="err" id="err-rphone"></span>
+      </div>
+      <div class="fg">
+        <label>Number of Participants</label>
+        <select id="rparts">
+          <option value="1">1 person</option>
+          <option value="2">2 people</option>
+          <option value="3">3 people</option>
+          <option value="4">4 people</option>
+          <option value="5">5 people</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <span class="err" id="err-events" style="display:block;margin-bottom:0.8rem;"></span>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="validateRegistration()">Review & Confirm →</button>
+  </div>
+</div>
+
+<!-- PAGE 2: Confirmation -->
+<div class="page" id="page2">
+  <div class="page-title">Review Registration</div>
+  <div class="page-sub">Please review your details before confirming.</div>
+
+  <div class="confirm-section">
+    <div class="cs-title">Your Details</div>
+    <div id="userConfirm"></div>
+  </div>
+
+  <div class="confirm-section">
+    <div class="cs-title">Selected Events</div>
+    <div id="eventsConfirm"></div>
+  </div>
+
+  <div class="confirm-section">
+    <div class="cs-title">Total Fees</div>
+    <div id="feeConfirm"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goPage('page1')">← Edit</button>
+    <button class="btn btn-success" onclick="confirmRegistration()">✔ Confirm Registration</button>
+  </div>
+</div>
+
+<!-- PAGE 3: Success -->
+<div class="page" id="page3">
+  <div class="success-wrap">
+    <div class="success-banner">
+      <span class="success-icon">🎟️</span>
+      <div class="success-title">You're Registered!</div>
+      <div class="reg-id" id="regId"></div>
+    </div>
+    <div class="receipt-card">
+      <div class="receipt-title">📋 Registration Summary</div>
+      <div id="receiptContent"></div>
+    </div>
+    <div class="btn-row" style="justify-content:center;margin-top:1.5rem;">
+      <button class="btn btn-primary" onclick="resetApp()">🔄 Register for More Events</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const EVENTS = [
+  { emoji:'🎸', name:'Rock Music Festival', date:'Mar 15, 2025', time:'6:00 PM', venue:'City Arena', desc:'Live bands, food court & fireworks', fee: 799, color:'#e63946' },
+  { emoji:'💻', name:'Tech Summit 2025', date:'Mar 22, 2025', time:'9:00 AM', venue:'Convention Hall A', desc:'AI, Web3 & future tech talks', fee: 1299, color:'#58a6ff' },
+  { emoji:'🎨', name:'Art & Craft Expo', date:'Apr 5, 2025', time:'10:00 AM', venue:'Heritage Gallery', desc:'Workshops, exhibitions & auctions', fee: 0, color:'#f78166' },
+  { emoji:'🏃', name:'City Marathon 2025', date:'Apr 12, 2025', time:'5:30 AM', venue:'City Start Point', desc:'5K, 10K & 21K categories', fee: 599, color:'#3fb950' },
+  { emoji:'📸', name:'Photography Walk', date:'Apr 20, 2025', time:'7:00 AM', venue:'Botanical Gardens', desc:'Golden hour shoot & critique session', fee: 0, color:'#d2a8ff' },
+  { emoji:'🍳', name:'MasterChef Workshop', date:'May 3, 2025', time:'11:00 AM', venue:'Culinary Institute', desc:'Cook with celebrity chefs', fee: 1999, color:'#ffa657' },
+];
+
+let selectedEvents = new Set();
+let regUser = {};
+
+function buildEvents() {
+  const grid = document.getElementById('eventsGrid');
+  grid.innerHTML = '';
+  EVENTS.forEach((ev, i) => {
+    const div = document.createElement('div');
+    div.className = 'event-card';
+    div.style.setProperty('--card-accent', ev.color);
+    div.id = 'ev-' + i;
+    div.innerHTML = `
+      <span class="event-emoji">${ev.emoji}</span>
+      <div class="event-name">${ev.name}</div>
+      <div class="event-meta">
+        <span>📅 <strong>${ev.date}</strong></span>
+        <span>⏰ <strong>${ev.time}</strong></span>
+        <span>📍 <strong>${ev.venue}</strong></span>
+        <span>${ev.desc}</span>
+      </div>
+      <span class="event-fee ${ev.fee === 0 ? 'free-badge' : ''}">${ev.fee === 0 ? 'FREE' : '₹' + ev.fee}</span>
+    `;
+    div.addEventListener('click', () => toggleEvent(i, div));
+    grid.appendChild(div);
+  });
+}
+
+function toggleEvent(i, el) {
+  if(selectedEvents.has(i)) { selectedEvents.delete(i); el.classList.remove('selected'); }
+  else { selectedEvents.add(i); el.classList.add('selected'); }
+  updateFeePanel();
+}
+
+function updateFeePanel() {
+  const panel = document.getElementById('feePanel');
+  const rows = document.getElementById('feeRows');
+  if(selectedEvents.size === 0) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+
+  const parts = parseInt(document.getElementById('rparts').value) || 1;
+  let total = 0;
+  rows.innerHTML = '';
+  selectedEvents.forEach(i => {
+    const ev = EVENTS[i];
+    const cost = ev.fee * parts;
+    total += cost;
+    rows.innerHTML += `<div class="fee-row"><span class="fee-label">${ev.emoji} ${ev.name}</span><span class="fee-val">${ev.fee === 0 ? 'FREE' : '₹' + cost.toLocaleString('en-IN')}</span></div>`;
+  });
+  rows.innerHTML += `<div class="fee-row"><span class="fee-label">Grand Total</span><span class="fee-val fee-total">₹${total.toLocaleString('en-IN')}</span></div>`;
+}
+
+document.addEventListener('change', e => { if(e.target.id === 'rparts') updateFeePanel(); });
+
+function validateRegistration() {
+  let ok = true;
+  const name = document.getElementById('rname').value.trim();
+  const email = document.getElementById('remail').value.trim();
+  const phone = document.getElementById('rphone').value.trim();
+
+  if(selectedEvents.size === 0) { document.getElementById('err-events').textContent = 'Please select at least one event.'; ok=false; } else document.getElementById('err-events').textContent='';
+  if(name.length < 2) { se('rname','Enter a valid name.'); ok=false; } else ce('rname');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { se('remail','Enter a valid email.'); ok=false; } else ce('remail');
+  if(!/^\d{10}$/.test(phone)) { se('rphone','Enter valid 10-digit phone.'); ok=false; } else ce('rphone');
+
+  if(ok) {
+    regUser = { name, email, phone, parts: document.getElementById('rparts').value };
+    buildConfirmPage();
+    goPage('page2');
+  }
+}
+
+function buildConfirmPage() {
+  document.getElementById('userConfirm').innerHTML = `
+    <div class="cr"><span class="cl">Name</span><span class="cv">${regUser.name}</span></div>
+    <div class="cr"><span class="cl">Email</span><span class="cv">${regUser.email}</span></div>
+    <div class="cr"><span class="cl">Phone</span><span class="cv">${regUser.phone}</span></div>
+    <div class="cr"><span class="cl">Participants</span><span class="cv">${regUser.parts}</span></div>
+  `;
+
+  let evHtml = ''; let total = 0;
+  const parts = parseInt(regUser.parts);
+  selectedEvents.forEach(i => {
+    const ev = EVENTS[i];
+    const cost = ev.fee * parts;
+    total += cost;
+    evHtml += `<div class="event-confirm-item"><span>${ev.emoji} ${ev.name}<br/><small style="color:var(--muted)">${ev.date} · ${ev.venue}</small></span><span>${ev.fee === 0 ? 'FREE' : '₹' + cost.toLocaleString('en-IN')}</span></div>`;
+  });
+  document.getElementById('eventsConfirm').innerHTML = evHtml;
+  document.getElementById('feeConfirm').innerHTML = `<div class="cr" style="font-size:1.1rem;"><span class="cl">Total Amount</span><span class="cv" style="color:var(--accent);">₹${total.toLocaleString('en-IN')}</span></div>`;
+}
+
+function confirmRegistration() {
+  const rid = 'EH' + Date.now().toString().slice(-8);
+  document.getElementById('regId').textContent = 'Registration ID: ' + rid;
+  let html = '';
+  html += `<div class="cr"><span class="cl">Name</span><span class="cv">${regUser.name}</span></div>`;
+  html += `<div class="cr"><span class="cl">Email</span><span class="cv">${regUser.email}</span></div>`;
+  let total = 0;
+  const parts = parseInt(regUser.parts);
+  selectedEvents.forEach(i => {
+    const ev = EVENTS[i];
+    total += ev.fee * parts;
+    html += `<div class="cr"><span class="cl">${ev.emoji} ${ev.name}</span><span class="cv">${ev.fee===0?'FREE':'₹'+(ev.fee*parts).toLocaleString('en-IN')}</span></div>`;
+  });
+  html += `<div class="cr" style="font-weight:800;font-size:1.05rem;"><span class="cl">Total Paid</span><span class="cv" style="color:var(--green);">₹${total.toLocaleString('en-IN')}</span></div>`;
+  document.getElementById('receiptContent').innerHTML = html;
+  goPage('page3');
+}
+
+function resetApp() {
+  selectedEvents.clear(); regUser = {};
+  buildEvents(); updateFeePanel();
+  document.getElementById('rname').value=''; document.getElementById('remail').value=''; document.getElementById('rphone').value='';
+  goPage('page1');
+}
+
+function goPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+function se(id,msg){ document.getElementById(id).classList.add('error'); document.getElementById('err-'+id).textContent=msg; }
+function ce(id){ document.getElementById(id).classList.remove('error'); document.getElementById('err-'+id).textContent=''; }
+
+buildEvents();
+</script>
+</body>
+</html>
