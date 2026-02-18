@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuizSpark</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- START SCREEN -->
+  <div id="start-screen" class="screen active">
+    <div class="start-bg">
+      <span class="blob b1"></span>
+      <span class="blob b2"></span>
+      <span class="blob b3"></span>
+    </div>
+    <div class="start-content">
+      <div class="logo">⚡</div>
+      <h1 class="brand">QuizSpark</h1>
+      <p class="tagline">10 questions. 30 seconds each.<br/>How sharp are you?</p>
+      <div class="meta-row">
+        <div class="meta-chip">📚 10 Questions</div>
+        <div class="meta-chip">⏱ 30s Each</div>
+        <div class="meta-chip">🏆 Score Tracked</div>
+      </div>
+      <button id="start-btn" class="btn-primary">Start Quiz</button>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="quiz-screen" class="screen">
+    <div class="quiz-header">
+      <div class="q-counter">
+        <span id="q-current">1</span><span class="q-sep">/</span><span>10</span>
+      </div>
+      <div class="timer-wrap">
+        <svg class="timer-ring" viewBox="0 0 56 56">
+          <circle class="ring-bg" cx="28" cy="28" r="24"/>
+          <circle id="ring-progress" class="ring-fg" cx="28" cy="28" r="24"/>
+        </svg>
+        <span id="timer-text">30</span>
+      </div>
+      <div class="score-display">
+        ⭐ <span id="live-score">0</span>
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div id="progress-bar" class="progress-bar"></div>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <div class="q-category" id="q-category">General Knowledge</div>
+      <h2 class="q-text" id="q-text">Question goes here?</h2>
+      <div class="options-grid" id="options-grid"></div>
+      <button id="next-btn" class="btn-next" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen" class="screen">
+    <div class="start-bg">
+      <span class="blob b1"></span>
+      <span class="blob b2"></span>
+      <span class="blob b3"></span>
+    </div>
+    <div class="result-content">
+      <div class="result-icon" id="result-icon">🏆</div>
+      <h2 class="result-title" id="result-title">Great Job!</h2>
+      <div class="score-circle">
+        <span id="final-score">0</span>
+        <small>/10</small>
+      </div>
+      <p class="score-label" id="score-label">Correct Answers</p>
+      <div class="result-stats">
+        <div class="stat-box">
+          <span id="stat-correct">0</span>
+          <label>Correct</label>
+        </div>
+        <div class="stat-box">
+          <span id="stat-wrong">0</span>
+          <label>Wrong</label>
+        </div>
+        <div class="stat-box">
+          <span id="stat-skipped">0</span>
+          <label>Skipped</label>
+        </div>
+      </div>
+      <button id="restart-btn" class="btn-primary">Play Again</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
