@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Food Order</title>
+
+<style>
+
+body{
+font-family:Segoe UI;
+background:linear-gradient(120deg,#ff9966,#ff5e62);
+color:white;
+text-align:center;
+}
+
+.container{
+background:white;
+color:black;
+width:600px;
+margin:auto;
+margin-top:40px;
+padding:30px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+
+button{
+background:#ff5e62;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#ff9966;
+}
+
+.bill{
+position:fixed;
+top:20px;
+right:20px;
+background:white;
+color:black;
+padding:20px;
+border-radius:10px;
+z-index:999;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Restaurant Order</h2>
+
+Name
+<input id="name"><br><br>
+
+Phone
+<input id="phone"><br><br>
+
+Meal Type
+<input type="radio" name="meal">Veg
+<input type="radio" name="meal">NonVeg
+<input type="radio" name="meal">Vegan
+
+<br><br>
+
+Food Items
+
+<br>
+
+<input type="checkbox" value="200">Pizza
+<input type="checkbox" value="150">Burger
+<input type="checkbox" value="180">Pasta
+<input type="checkbox" value="120">Salad
+
+<br><br>
+
+Quantity
+
+<select id="qty">
+<option>1</option>
+<option>2</option>
+<option>3</option>
+</select>
+
+<br><br>
+
+<button onclick="calc()">Calculate Bill</button>
+
+</div>
+
+<div class="bill" id="bill"></div>
+
+<canvas id="canvas" width="200" height="100"></canvas>
+
+<script>
+
+function calc(){
+
+let items=document.querySelectorAll("input[type=checkbox]");
+let qty=parseInt(document.getElementById("qty").value);
+
+let total=0;
+
+for(let i=0;i<items.length;i++){
+
+if(items[i].checked)
+total+=parseInt(items[i].value)*qty;
+
+}
+
+if(total>1000)
+alert("Discount Applied");
+
+document.getElementById("bill").innerHTML="Total = "+total;
+
+}
+
+let c=document.getElementById("canvas");
+let ctx=c.getContext("2d");
+
+ctx.strokeRect(10,10,180,80);
+
+</script>
+
+</body>
+</html>

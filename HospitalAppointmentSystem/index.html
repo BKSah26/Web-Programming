@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hospital Appointment</title>
+
+<style>
+
+body{
+font-family:Segoe UI;
+background:linear-gradient(135deg,#1e3c72,#2a5298);
+margin:0;
+color:white;
+}
+
+.container{
+width:900px;
+margin:auto;
+margin-top:40px;
+background:rgba(255,255,255,0.1);
+padding:30px;
+border-radius:15px;
+backdrop-filter:blur(10px);
+box-shadow:0 10px 40px rgba(0,0,0,0.5);
+}
+
+h1{text-align:center;}
+
+fieldset{
+border:1px solid rgba(255,255,255,0.3);
+padding:20px;
+margin-bottom:20px;
+border-radius:10px;
+}
+
+input,select,textarea{
+width:100%;
+padding:10px;
+border-radius:6px;
+border:none;
+margin-top:5px;
+margin-bottom:10px;
+}
+
+button{
+background:#00c6ff;
+background:linear-gradient(90deg,#00c6ff,#0072ff);
+border:none;
+padding:12px 25px;
+color:white;
+border-radius:8px;
+cursor:pointer;
+}
+
+.popup{
+position:fixed;
+top:40%;
+left:40%;
+background:white;
+color:black;
+padding:30px;
+border-radius:10px;
+display:none;
+z-index:999;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Hospital Appointment</h1>
+
+<form id="form">
+
+<fieldset>
+<legend>Personal Details</legend>
+
+Full Name
+<input id="name">
+
+Mobile
+<input id="mobile">
+
+Gender
+<input type="radio" name="gender">Male
+<input type="radio" name="gender">Female
+<input type="radio" name="gender">Other
+
+Appointment Date
+<input type="date" id="date">
+
+</fieldset>
+
+<fieldset>
+
+<legend>Appointment Details</legend>
+
+Department
+<select>
+<option>Cardiology</option>
+<option>Ortho</option>
+<option>Neurology</option>
+</select>
+
+Doctors
+<select id="doctor" multiple>
+<option>Dr Sharma</option>
+<option>Dr Mehta</option>
+<option>Dr Rao</option>
+</select>
+
+Time Slot
+<input type="radio" name="time">Morning
+<input type="radio" name="time">Evening
+
+</fieldset>
+
+<fieldset>
+
+<legend>Symptoms</legend>
+
+<textarea id="symptoms"></textarea>
+
+</fieldset>
+
+<input type="checkbox" id="agree">I agree to hospital policies
+
+<br><br>
+
+<button type="button" onclick="validate()">Submit</button>
+
+</form>
+
+</div>
+
+<div class="popup" id="popup">
+<h2>Appointment Booked</h2>
+</div>
+
+<script>
+
+function validate(){
+
+let name=document.getElementById("name").value;
+let mobile=document.getElementById("mobile").value;
+let date=document.getElementById("date").value;
+let doctors=document.getElementById("doctor").selectedOptions.length;
+let symptoms=document.getElementById("symptoms").value;
+let agree=document.getElementById("agree").checked;
+
+if(name==""){alert("Name required");return;}
+
+if(!/^\d{10}$/.test(mobile)){alert("Invalid mobile");return;}
+
+let today=new Date().toISOString().split("T")[0];
+if(date<today){alert("Past date not allowed");return;}
+
+if(doctors<1){alert("Select doctor");return;}
+
+if(symptoms.length<30){alert("Symptoms must be 30 characters");return;}
+
+if(!agree){alert("Accept policies");return;}
+
+document.body.style.background="lightgreen";
+
+document.getElementById("popup").style.display="block";
+
+}
+
+</script>
+
+</body>
+</html>

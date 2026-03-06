@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Event Booking</title>
+</head>
+
+<body style="font-family:Segoe UI;background:#ee0979;color:white;text-align:center">
+
+<h2>Event Booking</h2>
+
+Name
+<input><br>
+
+Email
+<input id="email"><br>
+
+Gender
+<input type="radio">Male
+<input type="radio">Female
+
+<br><br>
+
+Tickets
+
+<select id="tickets">
+
+<option>1</option>
+<option>2</option>
+<option>3</option>
+
+</select>
+
+<br><br>
+
+<canvas id="seat" width="300" height="300"></canvas>
+
+<br><br>
+
+<button onclick="book()">Book</button>
+
+<script>
+
+let canvas=document.getElementById("seat");
+
+let ctx=canvas.getContext("2d");
+
+let seats=[];
+let selected=[];
+
+for(let r=0;r<5;r++){
+
+for(let c=0;c<5;c++){
+
+let x=50*c;
+
+let y=50*r;
+
+ctx.strokeRect(x,y,40,40);
+
+seats.push({x:x,y:y});
+
+}
+
+}
+
+canvas.onclick=function(e){
+
+let rect=canvas.getBoundingClientRect();
+
+let x=e.clientX-rect.left;
+
+let y=e.clientY-rect.top;
+
+for(let i=0;i<seats.length;i++){
+
+let s=seats[i];
+
+if(x>s.x && x<s.x+40 && y>s.y && y<s.y+40){
+
+ctx.fillStyle="green";
+
+ctx.fillRect(s.x,s.y,40,40);
+
+selected.push(i);
+
+}
+
+}
+
+}
+
+function book(){
+
+let email=document.getElementById("email").value;
+
+if(!/^[^ ]+@[^ ]+\.[a-z]{2,3}$/.test(email)){
+
+alert("Invalid Email");
+
+return;
+
+}
+
+if(selected.length<1){
+
+alert("Select Seat");
+
+return;
+
+}
+
+alert("Booking Successful");
+
+}
+
+</script>
+
+</body>
+</html>

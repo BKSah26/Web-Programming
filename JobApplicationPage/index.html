@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Job Application</title>
+</head>
+
+<body style="font-family:Segoe UI;background:#11998e;color:white;text-align:center">
+
+<canvas id="logo" width="200" height="80"></canvas>
+
+<h2>IT Company Job Application</h2>
+
+Name
+<input id="name"><br>
+
+Email
+<input id="email"><br>
+
+Phone
+<input><br><br>
+
+Gender
+<input type="radio">Male
+<input type="radio">Female
+
+<br><br>
+
+Skills
+
+<br>
+
+<input type="checkbox">HTML
+<input type="checkbox">CSS
+<input type="checkbox">JS
+<input type="checkbox">React
+<input type="checkbox">Node
+
+<br><br>
+
+Experience
+
+<input type="radio" name="exp" onclick="disableExp()">Fresher
+<input type="radio" name="exp">Experienced
+
+<br>
+
+Years
+<input id="years">
+
+<br><br>
+
+<button onclick="validate()">Submit</button>
+
+<script>
+
+function disableExp(){
+
+document.getElementById("years").disabled=true;
+
+}
+
+function validate(){
+
+let email=document.getElementById("email").value;
+
+if(!/^[^ ]+@[^ ]+\.[a-z]{2,3}$/.test(email)){
+alert("Invalid Email");
+return;
+}
+
+let skills=document.querySelectorAll("input[type=checkbox]:checked");
+
+alert("Skills Selected: "+skills.length);
+
+}
+
+let c=document.getElementById("logo");
+
+let ctx=c.getContext("2d");
+
+ctx.font="30px Arial";
+
+ctx.fillText("IT Corp",40,40);
+
+</script>
+
+</body>
+</html>

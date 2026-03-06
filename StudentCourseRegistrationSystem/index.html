@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Registration</title>
+</head>
+
+<body style="font-family:Segoe UI;background:#667eea;color:white;text-align:center">
+
+<h2>Student Course Registration</h2>
+
+Roll No
+<input id="roll"><br><br>
+
+Name
+<input id="name"><br><br>
+
+Gender
+<input type="radio" name="g">Male
+<input type="radio" name="g">Female
+
+<br><br>
+
+Department
+
+<select>
+<option>CSE</option>
+<option>IT</option>
+<option>ECE</option>
+</select>
+
+<br><br>
+
+Courses
+
+<select id="courses" multiple>
+
+<option>AI</option>
+<option>ML</option>
+<option>DBMS</option>
+<option>Networks</option>
+
+</select>
+
+<br><br>
+
+<input type="checkbox" id="hostel" onclick="hostel()">Hostel Required
+
+<div id="room"></div>
+
+Feedback
+
+<textarea id="feedback"></textarea>
+
+<br><br>
+
+<button onclick="validate()">Submit</button>
+
+<script>
+
+function hostel(){
+
+if(document.getElementById("hostel").checked){
+
+document.getElementById("room").innerHTML="Room Preference <input>";
+
+}
+
+}
+
+function validate(){
+
+let roll=document.getElementById("roll").value;
+let courses=document.getElementById("courses").selectedOptions.length;
+let feedback=document.getElementById("feedback").value;
+
+if(!/^[A-Za-z]{2}\d{3}$/.test(roll)){
+alert("Invalid Roll Number");
+return;
+}
+
+if(courses<2){
+alert("Select minimum 2 courses");
+return;
+}
+
+if(feedback.length<50){
+alert("Feedback required");
+return;
+}
+
+alert("Registration Successful");
+
+}
+
+</script>
+
+</body>
+</html>
